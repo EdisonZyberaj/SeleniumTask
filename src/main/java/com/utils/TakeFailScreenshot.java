@@ -3,38 +3,37 @@ package com.utils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-
 import java.io.File;
-//import java.util.logging.FileHandler;
-//
-//import static jdk.jpackage.internal.WixAppImageFragmentBuilder.Component.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class TakeFailScreenshot {
 
-    WebDriver driver;
+    public static boolean takeScreenshot(WebDriver driver, String screenshotName) {
 
-    @BeforeMethod
-    public void setUp(){
-//        WebDriverManager.chromeDriver().setup();
-//        driver = new ChromeDriver();
-//        driver.manage().window().maximize();
-//        driver.get();
-    }
-
-    @AfterMethod
-    public void takeScreenshotForFailures(){
-        TakesScreenshot screenshot = (TakesScreenshot) driver;
-        File source = screenshot.getScreenshotAs(OutputType.FILE);
-        File dest = new File(System.getProperty("user.dir")+"/resources/screenshots/demo1.png");
+        if (driver == null) {
+            return false;
+        }
 
         try {
-//            FileHandler.copy(source, destination);
-        }
-        catch(Exception e){
-            System.out.println("errorororor");
+
+            File screenshotsDir = new File("resources/screenshots");
+            if (!screenshotsDir.exists()) {
+                screenshotsDir.mkdirs();
+            }
+
+            File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+            File destination = new File("resources/screenshots/" + screenshotName + ".png");
+
+            Files.copy(screenshot.toPath(), destination.toPath());
+
+            System.out.println("Screenshot saved: " + destination.getAbsolutePath());
+            return true;
+
+        } catch (IOException e) {
+            System.out.println("Failed to take screenshot: " + e.getMessage());
+            return false;
         }
     }
 }
