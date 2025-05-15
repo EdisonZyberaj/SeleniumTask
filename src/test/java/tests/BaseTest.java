@@ -1,6 +1,6 @@
 package tests;
 
-import com.pages.BasePage;
+import pages.BasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
@@ -19,12 +19,15 @@ public class BaseTest {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
+//
+//    @BeforeClass
+//    public void setUp() {
+//        WebDriverManager.chromedriver().setup();
+//        driver = new ChromeDriver();
+//        driver.manage().window().maximize();
+//        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+//    }
 
-    /**
-     * Base method to navigate to a page
-     * Child classes will implement their own @BeforeMethod
-     * to navigate to specific URLs
-     */
     protected void navigateTo(String url) {
         driver.get(url);
     }

@@ -1,6 +1,6 @@
-package com.pages;
+package pages;
 
-import com.utils.JavaScriptUtils;
+import utils.JavaScriptUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,11 +17,6 @@ public class UploadDownloadPage extends BasePage {
         super(driver);
         this.js = new JavaScriptUtils(driver);
     }
-//
-//    public UploadDownloadPage navigateToPage() {
-//        navigateTo("https://demoqa.com/upload-download"); // best practise
-//        return this;
-//    }
 
     public UploadDownloadPage uploadFile(String filePath) {
         try {
@@ -39,7 +34,6 @@ public class UploadDownloadPage extends BasePage {
         try {
             WebElement downloadElement = driver.findElement(downloadButton);
             js.clickWithJS(downloadElement);
-            // No need for extra click since clickWithJS already performs the click
             BasePage.delay(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
