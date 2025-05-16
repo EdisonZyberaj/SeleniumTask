@@ -23,7 +23,7 @@ public class UploadDownloadPage extends BasePage {
             WebElement uploadElement = driver.findElement(uploadFileInput);
             js.scrollToElement(uploadElement);
             uploadElement.sendKeys(filePath);
-            BasePage.delay(1000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -34,7 +34,7 @@ public class UploadDownloadPage extends BasePage {
         try {
             WebElement downloadElement = driver.findElement(downloadButton);
             js.clickWithJS(downloadElement);
-            BasePage.delay(1000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

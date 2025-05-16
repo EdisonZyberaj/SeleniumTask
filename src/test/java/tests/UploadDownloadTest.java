@@ -35,18 +35,7 @@ public class UploadDownloadTest extends BaseTest {
                 File.separator + "Downloads" +
                 File.separator + "sampleFile.jpeg");
 
-        BasePage.delay(3000);
         Assert.assertTrue(downloadedFile.exists(), "File was not downloaded");
     }
-    @AfterMethod
-    public void takeScreenshotOnFailure(ITestResult result) {
-        if (result.getStatus() == ITestResult.FAILURE) {
-            String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
-                    .format(new java.util.Date());
-            String screenshotName = result.getName() + "_failed_" + timestamp;
 
-            TakeFailScreenshot.takeScreenshot(driver, screenshotName);
-            System.out.println("Test failed! Screenshot captured: " + screenshotName);
-        }
-    }
 }

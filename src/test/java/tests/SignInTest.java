@@ -9,7 +9,7 @@ public class SignInTest extends BaseTest {
 
     @Test(priority = 3)
     public void testValidLogin() throws IOException {
-        driver.get("https://ecommerce.tealiumdemo.com/customer/account/login/");
+        navigateTo("https://ecommerce.tealiumdemo.com/customer/account/login/");
         SignInPage loginPage = new SignInPage(driver);
 
         String email = "Edi";

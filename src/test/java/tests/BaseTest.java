@@ -1,16 +1,21 @@
 package tests;
 
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import pages.BasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import utils.ConsentPopup;
+import utils.TakeFailScreenshot;
 
 import java.time.Duration;
 
 public class BaseTest {
     protected WebDriver driver;
     protected BasePage basePage;
+    protected ConsentPopup consentPopup;
 
     @BeforeClass
     public void setUp() {
@@ -18,6 +23,7 @@ public class BaseTest {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        consentPopup = new ConsentPopup(driver);
     }
 //
 //    @BeforeClass
@@ -30,11 +36,23 @@ public class BaseTest {
 
     protected void navigateTo(String url) {
         driver.get(url);
+        consentPopup.acceptIfPresent();
+    }
+
+    @AfterMethod
+    public void takeScreenshotOnFailure(ITestResult result) {
+        if (result.getStatus() == ITestResult.FAILURE) {
+            String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+                    .format(new java.util.Date());
+            String screenshotName = result.getName() + "_failed_" + timestamp;
+
+            TakeFailScreenshot.takeScreenshot(driver, screenshotName);
+            System.out.println("Test failed! Screenshot captured: " + screenshotName);
+        }
     }
 
     @AfterClass
     public void tearDown() {
-        BasePage.delay(2000);
         if (driver != null) {
             driver.quit();
         }

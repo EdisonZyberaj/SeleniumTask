@@ -1,7 +1,8 @@
 package pages;
-import org.openqa.selenium.By;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -9,41 +10,27 @@ import java.time.Duration;
 public class BasePage {
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private static final int TIMEOUT = 10;// kohe maksimale qe mund te preseee
+    private static final int TIMEOUT = 10;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT));
+        PageFactory.initElements(driver, this);
     }
 
-    protected void click(By locator) {
-        waitForElementToBeClickable(locator).click();
+    protected void click(WebElement element) {
+        waitForElementToBeClickable(element).click();
     }
 
-    protected WebElement find(By locator){
-        return driver.findElement(locator);
+    protected String getText(WebElement element) {
+        return waitForElementToBeVisible(element).getText();
     }
 
-    protected String getText(By locator) {
-        return waitForElementToBeVisible(locator).getText();
+    protected WebElement waitForElementToBeVisible(WebElement element) {
+        return wait.until(ExpectedConditions.visibilityOf(element));
     }
 
-
-    public static void delay(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch(InterruptedException exc) {
-            exc.printStackTrace();
-        }
+    protected WebElement waitForElementToBeClickable(WebElement element) {
+        return wait.until(ExpectedConditions.elementToBeClickable(element));
     }
-
-
-    protected WebElement waitForElementToBeVisible(By locator) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-    }
-
-    protected WebElement waitForElementToBeClickable(By locator) {
-        return wait.until(ExpectedConditions.elementToBeClickable(locator));
-    }
-
 }

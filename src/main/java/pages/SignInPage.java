@@ -1,29 +1,41 @@
 package pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 public class SignInPage extends BasePage {
 
+    @FindBy(id = "email")
+    private WebElement emailField;
+
+    @FindBy(id = "pass")
+    private WebElement passwordField;
+
+    @FindBy(id = "send2")
+    private WebElement loginButton;
+
+    @FindBy(xpath = "//span[contains(text(), 'Invalid login or password.')]")
+    private WebElement errorMessage;
+
     public SignInPage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(driver, this);
     }
 
-    private By emailField = By.id("email");
-    private By passwordField = By.id("pass");
-    private By loginButton = By.id("send2");
-    private By errorMessage = By.xpath("//span[contains(text(), 'Invalid login or password.')]");
-
     public void enterEmail(String email) {
-        driver.findElement(emailField).sendKeys(email);
+        emailField.clear();
+        emailField.sendKeys(email);
     }
 
     public void enterPassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        passwordField.clear();
+        passwordField.sendKeys(password);
     }
 
     public void clickLogin() {
-        driver.findElement(loginButton).click();
+        click(loginButton);
     }
 
     public boolean isLoginSuccessful() {
@@ -31,6 +43,10 @@ public class SignInPage extends BasePage {
     }
 
     public boolean isErrorMessageDisplayed() {
-        return driver.findElement(errorMessage).isDisplayed();
+        try {
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
