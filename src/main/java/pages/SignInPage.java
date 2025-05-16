@@ -19,6 +19,9 @@ public class SignInPage extends BasePage {
     @FindBy(xpath = "//span[contains(text(), 'Invalid login or password.')]")
     private WebElement errorMessage;
 
+    @FindBy(css = "p[class='hello'] strong")
+    private WebElement welcomeMessage;
+
     public SignInPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
@@ -39,11 +42,13 @@ public class SignInPage extends BasePage {
     }
 
     public boolean isLoginSuccessful() {
-        return driver.getCurrentUrl().contains("customer/account");
+        return driver.getCurrentUrl().contains("customer/account")&&
+                welcomeMessage.getText().contains("Hello,");
     }
 
     public boolean isErrorMessageDisplayed() {
         try {
+            System.out.println("Error message: " + errorMessage.getText());
             return errorMessage.isDisplayed();
         } catch (Exception e) {
             return false;

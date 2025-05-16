@@ -3,17 +3,16 @@ package tests;
 import pages.SignInPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import java.io.IOException;
 
 public class SignInTest extends BaseTest {
 
     @Test(priority = 3)
-    public void testValidLogin() throws IOException {
+    public void testValidLogin() {
         navigateTo("https://ecommerce.tealiumdemo.com/customer/account/login/");
         SignInPage loginPage = new SignInPage(driver);
 
-        String email = "Edi";
-        String password = "Zyberi";
+        String email = "edisonzyberaj@gmail.com";
+        String password = "Edi12345";
 
         loginPage.enterEmail(email);
         loginPage.enterPassword(password);
@@ -23,8 +22,8 @@ public class SignInTest extends BaseTest {
     }
 
     @Test(priority = 4)
-    public void testInvalidLogin() {
-        driver.get("https://ecommerce.tealiumdemo.com/customer/account/login/");
+    public void testInvalidLogin()  {
+        navigateTo("https://ecommerce.tealiumdemo.com/customer/account/login/");
         SignInPage loginPage = new SignInPage(driver);
 
         loginPage.enterEmail("mock@mail.com");

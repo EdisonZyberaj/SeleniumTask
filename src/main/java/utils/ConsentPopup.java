@@ -13,8 +13,9 @@ import java.time.Duration;
 public class ConsentPopup {
     private WebDriver driver;
     private WebDriverWait wait;
+    private JavaScriptUtils javaScriptUtils;
 
-    @FindBy(id = "_tealiumGDPRecModal")
+    @FindBy(className = "privacy_prompt")
     private WebElement popupContainer;
 
     @FindBy(id = "privacy_pref_optin")
@@ -26,6 +27,7 @@ public class ConsentPopup {
     public ConsentPopup(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+        this.javaScriptUtils = new JavaScriptUtils(driver);
         PageFactory.initElements(driver, this);
     }
 
@@ -40,7 +42,7 @@ public class ConsentPopup {
     public void acceptIfPresent() {
         try {
             if (isDisplayed()) {
-                optInRadio.click();
+                javaScriptUtils.clickWithJS(optInRadio);
                 submitButton.click();
                 wait.until(ExpectedConditions.invisibilityOf(popupContainer));
                 System.out.println("Consent popup accepted");
