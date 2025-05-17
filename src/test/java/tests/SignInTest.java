@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class SignInTest extends BaseTest {
 
-    @Test(priority = 3)
+    @Test(priority = 1)
     public void testValidLogin() {
         navigateTo("https://ecommerce.tealiumdemo.com/customer/account/login/");
         SignInPage loginPage = new SignInPage(driver);
@@ -21,7 +21,7 @@ public class SignInTest extends BaseTest {
         Assert.assertTrue(loginPage.isLoginSuccessful(), "Login failed!");
     }
 
-    @Test(priority = 4)
+    @Test(priority = 2)
     public void testInvalidLogin()  {
         navigateTo("https://ecommerce.tealiumdemo.com/customer/account/login/");
         SignInPage loginPage = new SignInPage(driver);
