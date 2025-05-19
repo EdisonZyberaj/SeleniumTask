@@ -10,7 +10,7 @@ import java.time.Duration;
 public class BasePage {
     protected WebDriver driver;
     protected WebDriverWait wait;
-    private static final int TIMEOUT = 10;
+    private static final int TIMEOUT = 5;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
@@ -19,7 +19,11 @@ public class BasePage {
     }
 
     protected void click(WebElement element) {
-        waitForElementToBeClickable(element).click();
+        try {
+            waitForElementToBeClickable(element).click();
+        } catch (Exception e) {
+            System.err.println("Error clicking element: " + e.getMessage());
+        }
     }
 
     protected String getText(WebElement element) {

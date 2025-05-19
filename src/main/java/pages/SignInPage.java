@@ -4,8 +4,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import utils.JavaScriptUtils;
 
 public class SignInPage extends BasePage {
+
+    JavaScriptUtils javaScriptUtils;
 
     @FindBy(id = "email")
     private WebElement emailField;
@@ -22,23 +26,31 @@ public class SignInPage extends BasePage {
     @FindBy(css = "p[class='hello'] strong")
     private WebElement welcomeMessage;
 
+
     public SignInPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
+        javaScriptUtils = new JavaScriptUtils(driver);
     }
 
-    public void enterEmail(String email) {
+    private void enterEmail(String email) {
+        wait.until(ExpectedConditions.visibilityOf(emailField));
         emailField.clear();
         emailField.sendKeys(email);
     }
 
-    public void enterPassword(String password) {
+    private void enterPassword(String password) {
         passwordField.clear();
         passwordField.sendKeys(password);
     }
 
-    public void clickLogin() {
-        click(loginButton);
+    private void clickLogin() {
+        try {
+            javaScriptUtils.scrollToElement(loginButton);
+            click(loginButton);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isLoginSuccessful() {
@@ -53,5 +65,10 @@ public class SignInPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+    public void login(String email, String password) {
+        enterEmail(email);
+        enterPassword(password);
+        clickLogin();
     }
 }

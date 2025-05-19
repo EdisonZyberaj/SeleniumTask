@@ -4,6 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import utils.JavaScriptUtils;
 
 public class RegisterPage extends BasePage {
@@ -39,8 +40,7 @@ public class RegisterPage extends BasePage {
     @FindBy(xpath = "//span[normalize-space()='Thank you for registering with Tealium Ecommerce.']")
     private WebElement confirmationMessage;
 
-    @FindBy(xpath = "//a[normalize-space()='Log Out']")
-    private WebElement logoutButton;
+
 
     public RegisterPage(WebDriver driver) {
         super(driver);
@@ -48,45 +48,50 @@ public class RegisterPage extends BasePage {
         javaScriptUtils = new JavaScriptUtils(driver);
     }
 
-    public void enterFirstName(String firstName) {
+    private void enterFirstName(String firstName) {
         firstNameField.clear();
         firstNameField.sendKeys(firstName);
     }
 
-    public void enterMiddleName(String middleName) {
+    private void enterMiddleName(String middleName) {
         middleNameField.clear();
         middleNameField.sendKeys(middleName);
     }
 
-    public void enterLastName(String lastName) {
+    private void enterLastName(String lastName) {
         lastNameField.clear();
         lastNameField.sendKeys(lastName);
     }
 
-    public void enterEmailAddress(String email) {
+    private void enterEmailAddress(String email) {
         emailAddressField.clear();
         emailAddressField.sendKeys(email);
     }
 
-    public void enterPassword(String password) {
+    private void enterPassword(String password) {
         passwordField.clear();
         passwordField.sendKeys(password);
     }
 
-    public void enterConfirmPassword(String confirmPassword) {
+    private void enterConfirmPassword(String confirmPassword) {
         confirmPasswordField.clear();
         confirmPasswordField.sendKeys(confirmPassword);
     }
 
-    public void checkSubscribe(boolean subscribe) {
+    private void checkSubscribe(boolean subscribe) {
         if (subscribe && !isSubscribedCheckbox.isSelected()) {
+            try {
+                javaScriptUtils.scrollToElement(isSubscribedCheckbox);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             click(isSubscribedCheckbox);
         } else if (!subscribe && isSubscribedCheckbox.isSelected()) {
             click(isSubscribedCheckbox);
         }
     }
 
-    public void checkRememberMe(boolean rememberMe) {
+    private void checkRememberMe(boolean rememberMe) {
         if (rememberMe && !rememberMeCheckbox.isSelected()) {
             click(rememberMeCheckbox);
         } else if (!rememberMe && rememberMeCheckbox.isSelected()) {
@@ -111,9 +116,10 @@ public class RegisterPage extends BasePage {
         }
     }
 
-    public void clickLogout() {
-        click(logoutButton);
+    public boolean isPageLoaded() {
+        return wait.until(ExpectedConditions.titleContains("Create New Customer Account"));
     }
+
 
     public void fillRegistrationForm(String firstName, String middleName, String lastName,
                                      String email, String password, String confirmPassword,

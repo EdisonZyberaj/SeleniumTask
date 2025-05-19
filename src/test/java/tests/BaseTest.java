@@ -7,23 +7,22 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import pages.HomePage;
 import utils.ConsentPopup;
 import utils.TakeFailScreenshot;
-
-import java.time.Duration;
 
 public class BaseTest {
     protected WebDriver driver;
     protected BasePage basePage;
     protected ConsentPopup consentPopup;
+    protected HomePage homePage;
 
     @BeforeClass
     public void setUp() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        consentPopup = new ConsentPopup(driver);
+        homePage = new HomePage(driver);
     }
 //
 //    @BeforeClass
@@ -31,12 +30,11 @@ public class BaseTest {
 //        WebDriverManager.chromedriver().setup();
 //        driver = new ChromeDriver();
 //        driver.manage().window().maximize();
-//        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 //    }
 
     protected void navigateTo(String url) {
         driver.get(url);
-        consentPopup.acceptIfPresent();
+        new ConsentPopup(driver).acceptIfPresent();
     }
 
     @AfterMethod

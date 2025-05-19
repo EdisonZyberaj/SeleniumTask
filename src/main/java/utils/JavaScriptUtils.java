@@ -16,7 +16,6 @@ public class JavaScriptUtils {
     public  void clickWithJS(WebElement element) throws InterruptedException {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", element);
-        Thread.sleep(1000);
         js.executeScript("arguments[0].click();", element);
     }
 
@@ -24,6 +23,5 @@ public class JavaScriptUtils {
     public void scrollToElement(WebElement element) throws InterruptedException {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", element);
-        Thread.sleep(1000);
     }
 }
