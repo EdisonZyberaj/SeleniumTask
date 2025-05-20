@@ -6,8 +6,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.JavaScriptUtils;
 
+import java.time.Duration;
 import java.util.List;
 
 public class ProductListingPage extends BasePage {
@@ -18,11 +21,10 @@ public class ProductListingPage extends BasePage {
     @FindBy(css = "a.product-image")
     private List<WebElement> productImages;
 
-    @FindBy(css = "button.button.btn-cart")
-    private List<WebElement> addToCartButtons;
+    @FindBy(css = "h2.product-name a")
+    private List<WebElement> productNames;
 
-    @FindBy(css = "ul.products-grid li.item .actions")
-    private List<WebElement> productActions;
+    private static final String HOVER_BLUE_COLOR = "rgb(51, 153, 204)";
 
     private Actions actions;
     private JavaScriptUtils javaScriptUtils;
@@ -34,11 +36,15 @@ public class ProductListingPage extends BasePage {
         javaScriptUtils = new JavaScriptUtils(driver);
     }
 
+
     public void hoverOverProduct(int index) {
         if (index < productItems.size()) {
             try {
-                javaScriptUtils.scrollToElement(productItems.get(index));
-                actions.moveToElement(productItems.get(index)).perform();
+                WebElement product = productItems.get(index);
+                new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.visibilityOf(product));
+                javaScriptUtils.scrollToElement(product);
+                actions.moveToElement(product).perform();
             } catch (Exception e) {
                 System.out.println("Error during hover: " + e.getMessage());
             }
@@ -47,11 +53,11 @@ public class ProductListingPage extends BasePage {
 
     public boolean isHoverStyleApplied(int index) {
         try {
-            if (index < addToCartButtons.size() && addToCartButtons.get(index).isDisplayed()) {
-                return true;
-            }
-
             if (index < productItems.size()) {
+                WebElement product = productItems.get(index);
+                new WebDriverWait(driver, Duration.ofSeconds(2))
+                        .until(ExpectedConditions.visibilityOf(product));
+
                 JavascriptExecutor js = (JavascriptExecutor) driver;
 
                 if (index < productImages.size()) {
@@ -59,15 +65,22 @@ public class ProductListingPage extends BasePage {
                             "return window.getComputedStyle(arguments[0]).getPropertyValue('border-color');",
                             productImages.get(index));
 
-                    if (borderColor != null &&
-                            (borderColor.contains("rgb(0, 136, 204)") ||
-                                    borderColor.contains("rgb(0,136,204)") ||
-                                    borderColor.contains("#0088cc"))) {
+                    System.out.println("Image border color: " + borderColor);
+
+                    if (borderColor != null && borderColor.equals(HOVER_BLUE_COLOR)) {
                         return true;
                     }
                 }
-                if (index < productActions.size() && productActions.get(index).isDisplayed()) {
-                    return true;
+                if (index < productNames.size()) {
+                    String textColor = (String) js.executeScript(
+                            "return window.getComputedStyle(arguments[0]).getPropertyValue('color');",
+                            productNames.get(index));
+
+                    System.out.println("Product name color: " + textColor);
+
+                    if (textColor != null && textColor.equals(HOVER_BLUE_COLOR)) {
+                        return true;
+                    }
                 }
             }
             return false;

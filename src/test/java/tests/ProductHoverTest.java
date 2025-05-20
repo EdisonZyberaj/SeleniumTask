@@ -15,17 +15,13 @@ public class ProductHoverTest extends BaseTest {
         Assert.assertTrue(new SignInPage(driver).isLoginSuccessful(),"Failed to login!");
     }
 
-    @Test(priority = 3)
+    @Test(priority = 1)
     public void testHoverStyleOnProduct() {
         ProductListingPage productListingPage = homePage.navigateToWomenCategory();
+        new TealiumMomentsPopup(driver).handleIfPresent();
 
-        TealiumMomentsPopup tealiumMomentsPopup = new TealiumMomentsPopup(driver);
-        tealiumMomentsPopup.handleIfPresent();
-
-        int productIndex = 0;
-        productListingPage.hoverOverProduct(productIndex);
-
-        Assert.assertTrue(productListingPage.isHoverStyleApplied(productIndex),
+        productListingPage.hoverOverProduct(0);
+        Assert.assertTrue(productListingPage.isHoverStyleApplied(0),
                 "Hover style is not applied to the product!");
     }
 }

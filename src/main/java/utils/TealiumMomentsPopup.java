@@ -45,9 +45,9 @@ public class TealiumMomentsPopup {
     public void handleIfPresent() {
         try {
             if (isDisplayed()) {
-                if (casualOption.isDisplayed()) {
-                    javaScriptUtils.clickWithJS(casualOption);
-                }
+//                if (casualOption.isDisplayed()) {
+//                    javaScriptUtils.clickWithJS(casualOption);
+//                }
 
                 if (submitButton.isDisplayed()) {
                     submitButton.click();

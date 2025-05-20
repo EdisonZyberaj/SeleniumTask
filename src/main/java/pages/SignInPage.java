@@ -29,13 +29,11 @@ public class SignInPage extends BasePage {
 
     public SignInPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver, this);
         javaScriptUtils = new JavaScriptUtils(driver);
     }
 
     private void enterEmail(String email) {
-        wait.until(ExpectedConditions.visibilityOf(emailField));
-        emailField.clear();
+        wait.until(ExpectedConditions.elementToBeClickable(emailField));
         emailField.sendKeys(email);
     }
 

@@ -29,6 +29,19 @@ public class HomePage extends BasePage {
     @FindBy(linkText = "View All Women")
     private WebElement viewAllWomenLink;
 
+    @FindBy(linkText = "SALE")
+    private WebElement saleMenu;
+
+    @FindBy(linkText = "View All Sale")
+    private WebElement viewAllSaleLink;
+
+
+    @FindBy(linkText = "MEN")
+    private WebElement menMenu;
+
+    @FindBy(linkText= "View All Men")
+    private WebElement viewAllMenLink;
+
     @FindBy(css = "p.welcome-msg")
     private WebElement welcomeMessage;
 
@@ -65,7 +78,18 @@ public class HomePage extends BasePage {
         click(viewAllWomenLink);
         return new ProductListingPage(driver);
     }
-
+    public SaleMenuPageTealium navigateToSalePage() {
+        actions.moveToElement(saleMenu).perform();
+        waitForElementToBeVisible(viewAllSaleLink);
+        click(viewAllSaleLink);
+        return new SaleMenuPageTealium(driver);
+    }
+    public MenCategoryPage navigateToMenCategory() {
+        actions.moveToElement(menMenu).perform();
+        waitForElementToBeVisible(viewAllMenLink);
+        click(viewAllMenLink);
+        return new MenCategoryPage(driver);
+    }
     public String getWelcomeMessage() {
         return waitForElementToBeVisible(welcomeMessage).getText();
     }
