@@ -76,22 +76,36 @@ public class MenCategoryPage  {
     }
 
     public boolean verifyProductPriceMatchesCriteria(double minPrice) {
-        try{
+        try {
+            PageFactory.initElements(driver, this);
             js.scrollToElement(productItems.get(0));
 
-        for(int i = 0; i < productPrices.size(); i++){
+            List<WebElement> freshPrices = driver.findElements(By.cssSelector(".price-box .price"));
 
-            String priceText = productPrices.get(i).getText().replace("$", "").replace(",", "");
-            double price = Double.parseDouble(priceText);
+            for (WebElement priceElement : freshPrices) {
+                try {
+                    String priceText = priceElement.getText().replace("$", "").replace(",", "");
+                    double price = Double.parseDouble(priceText);
 
-            if(price < minPrice){
-                return false;
+                    System.out.println("Found product price: $" + price);
+
+                    if (price < minPrice) {
+                        System.out.println("Product price $" + price + " is less than minimum $" + minPrice);
+                        return false;
+                    }
+                } catch (StaleElementReferenceException e) {
+                    System.out.println("Encountered stale element, continuing with next product");
+                    continue;
+                } catch (NumberFormatException e) {
+                    System.out.println("Could not parse price: " + e.getMessage());
+                    continue;
+                }
             }
-        }
-        return true;
-        }catch (Exception e){
+
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 }

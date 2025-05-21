@@ -32,11 +32,6 @@ public class WishlistPage extends BasePage {
             javaScriptUtils.scrollToElement(button);
             button.click();
 
-            wait.until(ExpectedConditions.or(
-                    ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-view")),
-                    ExpectedConditions.urlContains("checkout/cart")
-            ));
-
             return new ProductDetailsPage(driver);
         } catch (Exception e) {
 

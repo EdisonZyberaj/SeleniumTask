@@ -85,6 +85,8 @@ public class HomePage extends BasePage {
 
     public WishlistPage navigateToWishlist() {
         try {
+            PageFactory.initElements(driver, this);
+            wait.until(ExpectedConditions.visibilityOf(accButton));
             wait.until(ExpectedConditions.elementToBeClickable(accButton));
             click(accButton);
             wait.until(ExpectedConditions.elementToBeClickable(accountWishlistLink));

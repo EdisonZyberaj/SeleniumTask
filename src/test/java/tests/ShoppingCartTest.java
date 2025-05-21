@@ -6,12 +6,12 @@ import org.testng.annotations.Test;
 import pages.*;
 import utils.TealiumMomentsPopup;
 
-public class AddToCartTest extends BaseTest {
+public class ShoppingCartTest extends BaseTest {
 
     @BeforeMethod
     public void setupTest() {
         navigateTo("https://ecommerce.tealiumdemo.com/");
-        homePage.navigateToLogin().login("edisonzyberaj1@gmail.com", "Edi12345");
+        homePage.navigateToLogin().login("edisonzyberaj@gmail.com", "Edi12345");
         Assert.assertTrue(new SignInPage(driver).isLoginSuccessful(), "Failed to login!");
 
         ProductListingPage productListingPage = homePage.navigateToWomenCategory();
@@ -22,26 +22,38 @@ public class AddToCartTest extends BaseTest {
         productListingPage = homePage.navigateToWomenCategory();
         productListingPage.sortByPrice();
         productListingPage.addProductToWishlist(1);
-        System.out.println("Precondition completed");
+
+        WishlistPage wishlistPage = homePage.navigateToWishlist();
+        Assert.assertTrue(wishlistPage.isOnWishlistPage(), "Not on wishlist page");
+        ProductDetailsPage productDetailsPage = wishlistPage.addItemToCart();
+        productDetailsPage.addProductToCart();
+        wishlistPage = homePage.navigateToWishlist();
+        productDetailsPage = wishlistPage.addItemToCart();
+        ShoppingCartPage cartPage = productDetailsPage.addProductToCart();
+        System.out.println("Items added to cart: " + cartPage.getCartItemCount());
     }
 
     @Test
-    public void testAddWishlistItemsToCartAndVerifyTotal() {
-        WishlistPage wishlistPage = homePage.navigateToWishlist();
-        Assert.assertTrue(wishlistPage.isOnWishlistPage(), "Not on wishlist page");
+    public void testEmptyShoppingCart() {
+        ShoppingCartPage cartPage = homePage.navigateToCart();
 
-        ProductDetailsPage productDetailsPage = wishlistPage.addItemToCart();
-        productDetailsPage.addProductToCart();
+        int initialCount = cartPage.getCartItemCount();
+        System.out.println("Initial cart count: " + initialCount);
 
-        wishlistPage = homePage.navigateToWishlist();
+        while (cartPage.getCartItemCount() > 0) {
+            int currentCount = cartPage.getCartItemCount();
+            System.out.println("Current cart count: " + currentCount);
 
-        productDetailsPage = wishlistPage.addItemToCart();
-        ShoppingCartPage cartPage = productDetailsPage.addProductToCart();
+            cartPage.removeFirstItem();
 
-        cartPage.updateQuantity(0, 2);
-        cartPage.updateQuantity(1, 2);
-
-        Assert.assertTrue(cartPage.verifyTotalMatchesSum(),
-                "Grand total does not match the sum of product subtotals");
+            if (currentCount > 1) {
+                int newCount = cartPage.getCartItemCount();
+                Assert.assertEquals(newCount, currentCount - 1,
+                        "Cart count should decrease by 1 after deletion");
+                System.out.println("Cart count after deletion: " + newCount);
+            }
+        }
+        Assert.assertTrue(cartPage.isCartEmpty(), "Cart should be empty with message displayed");
+        System.out.println("Successfully verified empty cart message: " + cartPage.getEmptyCartMessage());
     }
 }

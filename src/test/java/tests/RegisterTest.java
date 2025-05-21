@@ -1,11 +1,13 @@
 package tests;
 
+import org.testng.annotations.Listeners;
 import pages.RegisterPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
+@Listeners(utils.ExtentReportManager.class)
 public class RegisterTest extends BaseTest {
 
     @Test(priority = 1)

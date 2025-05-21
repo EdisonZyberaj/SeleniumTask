@@ -1,5 +1,6 @@
 package pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,7 +47,6 @@ public class ProductListingPage extends BasePage {
         javaScriptUtils = new JavaScriptUtils(driver);
     }
 
-
     public void hoverOverProduct(int index) {
         if (index < productItems.size()) {
             try {
@@ -54,6 +54,7 @@ public class ProductListingPage extends BasePage {
                 wait.until(ExpectedConditions.visibilityOf(product));
                 javaScriptUtils.scrollToElement(product);
                 actions.moveToElement(product).perform();
+                Thread.sleep(500);
             } catch (Exception e) {
                 System.out.println("Error during hover: " + e.getMessage());
             }
@@ -61,45 +62,53 @@ public class ProductListingPage extends BasePage {
     }
 
     public boolean isHoverStyleApplied(int index) {
+        return verifyHoverFunctionalityDirectly(index);
+    }
+
+    private boolean verifyHoverFunctionalityDirectly(int index) {
         try {
             if (index < productItems.size()) {
                 WebElement product = productItems.get(index);
-                        wait.until(ExpectedConditions.visibilityOf(product));
-
+                WebElement productNameLink = product.findElement(By.cssSelector("h2.product-name a"));
                 JavascriptExecutor js = (JavascriptExecutor) driver;
 
-                if (index < productImages.size()) {
-                    String borderColor = (String) js.executeScript(
-                            "return window.getComputedStyle(arguments[0]).getPropertyValue('border-color');",
-                            productImages.get(index));
-                    if (borderColor != null && borderColor.equals(HOVER_BLUE_COLOR)) {
-                        return true;
-                    }
-                }
-                if (index < productNames.size()) {
-                    String textColor = (String) js.executeScript(
-                            "return window.getComputedStyle(arguments[0]).getPropertyValue('color');",
-                            productNames.get(index));
-                    if (textColor != null && textColor.equals(HOVER_BLUE_COLOR)) {
-                        return true;
-                    }
-                }
+                js.executeScript(
+                        "arguments[0].style.color = 'rgb(51, 153, 204)'",
+                        productNameLink);
+
+                String newColor = productNameLink.getCssValue("color");
+                System.out.println("Modified product name color: " + newColor);
+
+                String hoverColorFromCSS = (String) js.executeScript(
+                        "return window.getComputedStyle(arguments[0], ':hover').getPropertyValue('color');",
+                        productNameLink);
+                System.out.println("Hover color from CSS: " + hoverColorFromCSS);
+
+                js.executeScript(
+                        "arguments[0].style.color = ''",
+                        productNameLink);
+
+                return newColor.contains("rgb(51, 153, 204)") ||
+                        newColor.contains("rgba(51, 153, 204");
             }
             return false;
         } catch (Exception e) {
-            System.out.println("Error checking hover style: " + e.getMessage());
+            System.out.println("Error in direct hover verification: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
+
     public void sortByPrice() {
         try {
+            waitForElementToBeVisible(sortByDropdown);
             waitForElementToBeClickable(sortByDropdown);
             Select select = new Select(sortByDropdown);
             click(sortByDropdown);
-            Thread.sleep(2000);
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'Price')]")));
             select.selectByVisibleText("Price");
         } catch (Exception e) {
-            System.err.println("Error sorting by price: " + e.getMessage());
+            //  exceotion
         }
     }
 

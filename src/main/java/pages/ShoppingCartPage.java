@@ -29,6 +29,18 @@ public class ShoppingCartPage extends BasePage {
     @FindBy(css = ".product-cart-total .price")
     private List<WebElement> productSubtotals;
 
+    @FindBy(css = "td.a-center.product-cart-remove.last a.btn-remove")
+    private List<WebElement> removeButtons;
+
+    @FindBy(css = "div.cart-empty")
+    private WebElement emptyCartMessage;
+
+    @FindBy(css = "div.header-minicart span.count")
+    private WebElement cartCountElement;
+
+    @FindBy(css = "button#empty_cart_button")
+    private WebElement emptyCartButton;
+
     public ShoppingCartPage(WebDriver driver) {
         super(driver);
         javaScriptUtils = new JavaScriptUtils(driver);
@@ -87,4 +99,55 @@ public class ShoppingCartPage extends BasePage {
 
         return Math.abs(grandTotal - calculatedTotal) == 0;
     }
+
+    public int getCartItemCount() {
+        try {
+            PageFactory.initElements(driver, this);
+            wait.until(ExpectedConditions.visibilityOf(cartCountElement));
+            String countText = cartCountElement.getText().trim();
+
+            if (countText.isEmpty()) {
+                return 0;
+            }
+
+            return Integer.parseInt(countText);
+        } catch (Exception e) {
+            System.err.println("Error getting cart count: " + e.getMessage());
+            return 0;
+        }
+    }
+    public ShoppingCartPage removeFirstItem() {
+        try {
+            PageFactory.initElements(driver, this);
+            if (!removeButtons.isEmpty()) {
+                WebElement removeButton = removeButtons.get(0);
+                javaScriptUtils.scrollToElement(removeButton);
+                click(removeButton);
+
+                wait.until(ExpectedConditions.stalenessOf(removeButton));
+                PageFactory.initElements(driver, this);
+            }
+        } catch (Exception e) {
+            System.err.println("Error removing item from cart: " + e.getMessage());
+        }
+        return this;
+    }
+    public boolean isCartEmpty() {
+        try {
+            PageFactory.initElements(driver, this);
+            return emptyCartMessage.isDisplayed() &&
+                    emptyCartMessage.getText().contains("You have no items in your shopping cart");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public String getEmptyCartMessage() {
+        try {
+            PageFactory.initElements(driver, this);
+            return emptyCartMessage.getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }
