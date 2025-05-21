@@ -23,7 +23,6 @@ public class SaleProductStyleTest extends BaseTest {
 
         new TealiumMomentsPopup(driver).handleIfPresent();
 
-
         for (WebElement productItem : saleMenuPageTealium.getProductItems()) {
             WebElement originalPrice = saleMenuPageTealium.getOriginalPrice(productItem);
             WebElement finalPrice = saleMenuPageTealium.getFinalPrice(productItem);

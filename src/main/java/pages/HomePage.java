@@ -7,12 +7,14 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.JavaScriptUtils;
 
 import java.time.Duration;
 
 public class HomePage extends BasePage {
 
     private Actions actions;
+    JavaScriptUtils javaScriptUtils;
 
     @FindBy(css = ".skip-link.skip-account")
     private WebElement accountButton;
@@ -35,7 +37,6 @@ public class HomePage extends BasePage {
     @FindBy(linkText = "View All Sale")
     private WebElement viewAllSaleLink;
 
-
     @FindBy(linkText = "MEN")
     private WebElement menMenu;
 
@@ -48,12 +49,21 @@ public class HomePage extends BasePage {
     @FindBy(linkText = "Log Out")
     private WebElement logoutButton;
 
+    @FindBy(xpath = "//span[@class='label'][normalize-space()='Account']")
+    private WebElement accButton;
+
+    @FindBy(partialLinkText = "My Wishlist")
+    private WebElement accountWishlistLink;
+
+    @FindBy(xpath = "//a[contains(@class,'no-count')]")
+    private WebElement cartButton;
 
     public HomePage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
         wait = new WebDriverWait(driver, Duration.ofSeconds(4));
         actions = new Actions(driver);
+        javaScriptUtils  = new JavaScriptUtils(driver);
     }
 
     public RegisterPage navigateToRegister() {
@@ -63,6 +73,7 @@ public class HomePage extends BasePage {
     }
 
     public SignInPage navigateToLogin() {
+
         wait.until(ExpectedConditions.elementToBeClickable(accountButton)).click();
         wait.until(ExpectedConditions.elementToBeClickable(loginLink)).click();
         return new SignInPage(driver);
@@ -72,6 +83,29 @@ public class HomePage extends BasePage {
         click(logoutButton);
     }
 
+    public WishlistPage navigateToWishlist() {
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(accButton));
+            click(accButton);
+            wait.until(ExpectedConditions.elementToBeClickable(accountWishlistLink));
+            click(accountWishlistLink);
+            return new WishlistPage(driver);
+        } catch (Exception e) {
+            System.err.println("Error navigating to wishlist: " + e.getMessage());
+            return new WishlistPage(driver);
+        }
+    }
+
+    public ShoppingCartPage navigateToCart() {
+        try {
+            click(cartButton);
+            return new ShoppingCartPage(driver);
+        } catch (Exception e) {
+            System.err.println("Error navigating to cart: " + e.getMessage());
+            driver.get("https://ecommerce.tealiumdemo.com/checkout/cart/");
+            return new ShoppingCartPage(driver);
+        }
+    }
     public ProductListingPage navigateToWomenCategory() {
         actions.moveToElement(womenMenu).perform();
         waitForElementToBeVisible(viewAllWomenLink);
@@ -93,4 +127,20 @@ public class HomePage extends BasePage {
     public String getWelcomeMessage() {
         return waitForElementToBeVisible(welcomeMessage).getText();
     }
+    public boolean isWishlistItemCountCorrect(int expectedCount) {
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(accButton));
+            click(accButton);
+            WebElement wishlistLink = wait.until(ExpectedConditions.visibilityOf(accountWishlistLink));
+            String linkText = wishlistLink.getText();
+            return linkText.contains("(" + expectedCount + " items)");
+        } catch (Exception e) {
+            System.err.println("Error checking wishlist count: " + e.getMessage());
+            return false;
+        }
+    }
+    public void clickAccount() {
+        click(accountButton);
+    }
+
 }

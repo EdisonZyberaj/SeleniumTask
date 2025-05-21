@@ -7,10 +7,11 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.Select;
 import utils.JavaScriptUtils;
 
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ProductListingPage extends BasePage {
@@ -23,6 +24,15 @@ public class ProductListingPage extends BasePage {
 
     @FindBy(css = "h2.product-name a")
     private List<WebElement> productNames;
+
+    @FindBy(xpath = "//body/div[@class='wrapper']/div[@class='page']/div[@class='main-container col3-layout']/div[@class='main']/div[@class='col-wrapper']/div[@class='col-main']/div[@class='category-products']/div[@class='toolbar']/div[@class='sorter']/div[@class='sort-by']/select[1]")
+    private WebElement sortByDropdown;
+
+    @FindBy(css = "a.link-wishlist")
+    private List<WebElement> wishlistLinks;
+
+    @FindBy(css = ".col-main .regular-price .price, .special-price .price")
+    private List<WebElement> productPrices;
 
     private static final String HOVER_BLUE_COLOR = "rgb(51, 153, 204)";
 
@@ -41,8 +51,7 @@ public class ProductListingPage extends BasePage {
         if (index < productItems.size()) {
             try {
                 WebElement product = productItems.get(index);
-                new WebDriverWait(driver, Duration.ofSeconds(2))
-                        .until(ExpectedConditions.visibilityOf(product));
+                wait.until(ExpectedConditions.visibilityOf(product));
                 javaScriptUtils.scrollToElement(product);
                 actions.moveToElement(product).perform();
             } catch (Exception e) {
@@ -55,8 +64,7 @@ public class ProductListingPage extends BasePage {
         try {
             if (index < productItems.size()) {
                 WebElement product = productItems.get(index);
-                new WebDriverWait(driver, Duration.ofSeconds(2))
-                        .until(ExpectedConditions.visibilityOf(product));
+                        wait.until(ExpectedConditions.visibilityOf(product));
 
                 JavascriptExecutor js = (JavascriptExecutor) driver;
 
@@ -64,9 +72,6 @@ public class ProductListingPage extends BasePage {
                     String borderColor = (String) js.executeScript(
                             "return window.getComputedStyle(arguments[0]).getPropertyValue('border-color');",
                             productImages.get(index));
-
-                    System.out.println("Image border color: " + borderColor);
-
                     if (borderColor != null && borderColor.equals(HOVER_BLUE_COLOR)) {
                         return true;
                     }
@@ -75,9 +80,6 @@ public class ProductListingPage extends BasePage {
                     String textColor = (String) js.executeScript(
                             "return window.getComputedStyle(arguments[0]).getPropertyValue('color');",
                             productNames.get(index));
-
-                    System.out.println("Product name color: " + textColor);
-
                     if (textColor != null && textColor.equals(HOVER_BLUE_COLOR)) {
                         return true;
                     }
@@ -87,6 +89,49 @@ public class ProductListingPage extends BasePage {
         } catch (Exception e) {
             System.out.println("Error checking hover style: " + e.getMessage());
             return false;
+        }
+    }
+    public void sortByPrice() {
+        try {
+            waitForElementToBeClickable(sortByDropdown);
+            Select select = new Select(sortByDropdown);
+            click(sortByDropdown);
+            Thread.sleep(2000);
+            select.selectByVisibleText("Price");
+        } catch (Exception e) {
+            System.err.println("Error sorting by price: " + e.getMessage());
+        }
+    }
+
+    public boolean areProductsSortedByPrice() {
+        PageFactory.initElements(driver, this);
+        List<Double> prices = new ArrayList<>();
+        for (WebElement priceElement : productPrices) {
+            String priceText = priceElement.getText().replace("$", "").replace(",", "");
+            System.out.println("Price text: " + priceText);
+            try {
+                double price = Double.parseDouble(priceText);
+                prices.add(price);
+            } catch (NumberFormatException e) {
+                System.err.println("Error parsing price: " + e.getMessage());
+            }
+        }
+
+        List<Double> sortedPrices = new ArrayList<>(prices);
+        Collections.sort(sortedPrices);
+
+        return prices.equals(sortedPrices);
+    }
+
+    public void addProductToWishlist(int index) {
+        if (index < wishlistLinks.size()) {
+            try {
+                WebElement wishlistLink = wishlistLinks.get(index);
+                javaScriptUtils.scrollToElement(wishlistLink);
+                click(wishlistLink);
+            } catch (Exception e) {
+                System.err.println("Error adding product to wishlist: " + e.getMessage());
+            }
         }
     }
 }
